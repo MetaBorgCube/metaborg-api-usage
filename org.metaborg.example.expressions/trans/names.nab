@@ -1,0 +1,16 @@
+module names
+
+namespaces Variable
+
+binding rules
+
+  Root(e): scopes Variable
+  
+  Let(decl*, body):
+  	scopes Variable
+  
+  LetDecl(v, init):
+    defines Variable v
+    
+  VarRef(v): 
+  	refers to Variable v

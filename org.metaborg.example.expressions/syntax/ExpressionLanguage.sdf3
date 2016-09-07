@@ -1,0 +1,32 @@
+module ExpressionLanguage
+
+imports
+  
+  Common
+
+context-free start-symbols
+  
+  Start
+
+context-free syntax
+  
+  Start.Root = Expression
+  
+context-free syntax
+
+  Expression.IntLiteral = INT
+  
+  Expression.Add = [[Expression] + [Expression]] {left}
+  Expression.Mul = [[Expression] * [Expression]] {left}
+  
+  Expression = [([Expression])] {bracket}
+  
+  Expression.Let = [let [LetDecl] in [Expression] end]
+  
+  LetDecl.LetDecl = [[ID] = [Expression]]
+  
+  Expression.VarRef = ID
+
+context-free priorities
+
+  Expression.Mul > Expression.Add
