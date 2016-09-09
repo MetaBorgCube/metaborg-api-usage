@@ -13,7 +13,7 @@ import org.metaborg.core.syntax.ParseException;
 import org.metaborg.example.externalref.app.SpoofaxUtil;
 import org.metaborg.example.externalref.app.context.ExpressionContext;
 import org.metaborg.example.externalref.app.syntax.Root;
-import org.metaborg.example.externalref.expressions.strategies.get_external_type_0_0;
+import org.metaborg.example.externalref.context.get_external_type_0_0;
 import org.metaborg.spoofax.core.Spoofax;
 import org.metaborg.spoofax.core.unit.ISpoofaxAnalyzeUnit;
 import org.metaborg.spoofax.core.unit.ISpoofaxInputUnit;

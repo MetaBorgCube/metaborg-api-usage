@@ -1,28 +1,13 @@
-package org.metaborg.example.externalref.expressions.strategies;
+package org.metaborg.example.externalref.context;
 
 import java.util.Optional;
 
-import org.metaborg.example.externalref.context.IDeclaration;
-import org.metaborg.example.externalref.context.IExpressionContext;
-import org.metaborg.example.externalref.context.Type;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.strategoxt.lang.Context;
 import org.strategoxt.lang.Strategy;
 
-/**
- * Example Java strategy implementation.
- *
- * This strategy can be used by editor services and can be called in Stratego
- * modules by declaring it as an external strategy as follows:
- *
- * <code>
- *  external get_external_type_0_0(|)
- * </code>
- *
- * @see InteropRegisterer This class registers get_external_type_0_0 for use.
- */
 public class get_external_type_0_0 extends Strategy {
 
 	public static get_external_type_0_0 instance = new get_external_type_0_0();
