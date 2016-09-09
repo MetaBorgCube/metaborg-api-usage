@@ -1,0 +1,1 @@
+TRIM ( BOTH someChar FROM someString)

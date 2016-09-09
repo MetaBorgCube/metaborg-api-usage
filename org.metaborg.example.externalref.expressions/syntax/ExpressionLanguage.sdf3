@@ -1,0 +1,39 @@
+module ExpressionLanguage
+
+imports
+  
+  Common
+
+context-free start-symbols
+  
+  Start
+
+context-free syntax 
+  Start.Root = Expression
+
+context-free syntax
+  
+  Expression.ExternalRef    = ID
+
+  Expression.IntLiteral    = INT
+  Expression.StringLiteral = STRING
+  
+context-free syntax 
+ 
+  Expression.Add = [[Expression] + [Expression]] {left}
+  Expression.Mul = [[Expression] * [Expression]] {left}
+  Expression.Conc = [[Expression] || [Expression]] {left} 
+
+  Expression     = [([Expression])] {bracket}
+ 
+context-free syntax
+
+  Type.IntTy = [int]
+  Type.StringTy = [String]
+  
+context-free priorities
+ 
+  Expression.Mul >
+  Expression.Add >
+  Expression.Conc
+  
