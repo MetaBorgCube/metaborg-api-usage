@@ -1,0 +1,20 @@
+module externalref
+
+imports
+
+  signatures/-
+  signatures/analysis/-
+  
+  runtime/types/-
+  
+strategies
+
+  external get-external-type(|)
+
+rules
+
+  create-type-task(|ctx) :
+    ExternalRef(c) -> <type-is(|ctx)> ty
+    where
+      ty := <get-external-type> c
+  

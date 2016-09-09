@@ -1,0 +1,42 @@
+module pp
+
+imports
+
+  libstratego-gpp
+  runtime/refactoring/-
+  pp/ExpressionLanguage-parenthesize
+  pp/ExpressionLanguage-pp
+
+rules
+
+  editor-format:
+    (node, _, ast, path, project-path) -> (filename, result)
+    with
+      ext      := <get-extension> path
+    ; filename := <guarantee-extension(|$[pp.[ext]])> path
+    ; result   := <pp-debug> node
+
+rules
+  
+  pp-ExpressionLanguage-string =
+    parenthesize-ExpressionLanguage
+    ; prettyprint-ExpressionLanguage-start-symbols
+    ; !V([], <id>)
+    ; box2text-string(|120)
+      
+  pp-partial-ExpressionLanguage-string =
+    parenthesize-ExpressionLanguage
+    ; prettyprint-ExpressionLanguage
+    ; !V([], <id>)
+    ; box2text-string(|120)
+      
+  pp-debug :
+    ast -> result
+    with
+       result := <pp-ExpressionLanguage-string> ast
+    <+ <bottomup(try(not(is-string); not(is-list); not(pp-ExpressionLanguage-string); debug(!"cannot pp ")))> ast
+    ;  result := ""
+
+rules
+  
+  construct-textual-change = construct-textual-change(pp-partial-ExpressionLanguage-string, parenthesize, override-reconstruction, resugar)
