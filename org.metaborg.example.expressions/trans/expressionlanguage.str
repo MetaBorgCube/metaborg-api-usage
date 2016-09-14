@@ -6,7 +6,8 @@ imports
   pp
   outline
   analysis
-
+  eval
+  
 rules // Debugging
   
   debug-show-aterm:
@@ -14,3 +15,10 @@ rules // Debugging
     with
       filename := <guarantee-extension(|"aterm")> path
     ; result   := node
+
+  evaluate-expression:
+    (_, _, ast, path, project-path) -> (filename, result)
+    with
+      filename := <guarantee-extension(|"txt")> path
+    ; result   := <eval> ast
+    
