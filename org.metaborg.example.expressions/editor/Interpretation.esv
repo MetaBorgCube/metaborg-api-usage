@@ -1,0 +1,7 @@
+module Interpretation
+
+menus
+  
+  menu: "Interpretation" (openeditor)
+    
+    action: "Evaluate" = evaluate-expression

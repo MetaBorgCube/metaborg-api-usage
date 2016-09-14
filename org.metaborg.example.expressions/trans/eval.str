@@ -1,0 +1,41 @@
+module eval
+
+imports
+
+	runtime/nabl/-
+  
+rules
+
+  eval: 
+    Root(e) -> <eval(|[])> e
+  
+  eval(|env): 
+  	IntLiteral(x) -> v
+  	with
+  	  v := <string-to-int> x
+  
+  eval(|env): 
+  	Add(e1, e2)   -> <addi> (v1, v2)
+  	with
+  	  v1 := <eval(|env)> e1
+  	; v2 := <eval(|env)> e2
+  
+  eval(|env): 
+  	Mul(e1, e2)   -> <muli> (v1, v2)
+  	with
+  	  v1 := <eval(|env)> e1
+  	; v2 := <eval(|env)> e2
+  	
+  eval(|env): 
+    VarRef(x) -> v
+    with
+      uri := <nabl-uri> x
+    ; v   := <lookup> (uri, env)
+    
+  eval(|env): 
+    Let(LetDecl(x, e1), e2) -> v
+    with
+      uri := <nabl-uri> x
+    ; v1  := <eval(|env)> e1
+    ; v   := <eval(|[(uri, v1)|env])> e2
+    
