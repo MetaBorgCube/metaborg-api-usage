@@ -10,6 +10,8 @@ dependencies:
   - org.metaborg:org.metaborg.meta.lang.ts:${metaborgVersion}
   source:
   - org.metaborg:org.metaborg.meta.lib.analysis:${metaborgVersion}
+  java:
+  - org.example:org.metaborg.example.externalref.context:0.0.1-SNAPSHOT
 pardonedLanguages:
 - EditorService
 - Stratego-Sugar
