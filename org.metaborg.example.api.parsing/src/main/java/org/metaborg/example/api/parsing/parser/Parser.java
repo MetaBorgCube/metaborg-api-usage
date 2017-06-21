@@ -6,7 +6,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.syntax.ParseException;
-import org.metaborg.example.api.parsing.SpoofaxUtil;
 import org.metaborg.example.api.parsing.syntax.Root;
 import org.metaborg.spoofax.core.Spoofax;
 import org.metaborg.spoofax.core.unit.ISpoofaxInputUnit;
@@ -19,7 +18,8 @@ public class Parser {
 
 	public Parser(Spoofax spoofax, String languageResource) throws MetaborgException {
 		this.spoofax = spoofax;
-		this.implementation = SpoofaxUtil.getImplementation(spoofax, languageResource);
+		FileObject location = spoofax.resourceService.resolve(languageResource);
+		this.implementation = spoofax.languageDiscoveryService.languageFromArchive(location);
 	}
 
 	public Root parse(String content) throws MetaborgException {

@@ -25,7 +25,8 @@ public class Parser {
 
 	public Parser(Spoofax spoofax, String languageResource) throws MetaborgException {
 		this.spoofax = spoofax;
-		this.implementation = SpoofaxUtil.getImplementation(spoofax, languageResource);
+		FileObject location = spoofax.resourceService.resolve(languageResource);
+		this.implementation = spoofax.languageDiscoveryService.languageFromArchive(location);
 	}
 
 	public Root parse(String content) throws MetaborgException, IOException {
