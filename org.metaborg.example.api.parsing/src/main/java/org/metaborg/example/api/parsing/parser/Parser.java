@@ -23,7 +23,7 @@ public class Parser {
 	}
 
 	public Root parse(String content) throws MetaborgException {
-		ISpoofaxInputUnit input = spoofax.unitService.inputUnit(null, content, implementation, null);
+		ISpoofaxInputUnit input = spoofax.unitService.inputUnit(content, implementation, null);
 		ISpoofaxParseUnit parsed = spoofax.syntaxService.parse(input);
 		if (!parsed.valid())
 			throw new ParseException(input, "Could not parse");
@@ -34,12 +34,7 @@ public class Parser {
 	public Root parseFile(String path)
 			throws MetaborgException, IOException {
 		FileObject file = spoofax.resourceService.resolve(path);
-		String content = spoofax.sourceTextService.text(file);
-		ISpoofaxInputUnit input = spoofax.unitService.inputUnit(file, content, implementation, null);
-		ISpoofaxParseUnit parsed = spoofax.syntaxService.parse(input);
-		if (!parsed.valid())
-			throw new ParseException(input, "Could not parse");
 		
-		return new Factory().createRoot(parsed.ast());
+		return parse(spoofax.sourceTextService.text(file));
 	}
 }

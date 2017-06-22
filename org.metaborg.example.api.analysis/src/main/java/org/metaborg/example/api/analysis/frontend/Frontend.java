@@ -30,34 +30,26 @@ public class Frontend {
 	}
 
 	public Root analyze(String content) throws MetaborgException, IOException {
-		
 		FileObject file = VFS.getManager().toFileObject(File.createTempFile("temp", "example"));
 
-		ISpoofaxInputUnit input = spoofax.unitService.inputUnit(file, content, implementation, null);
-		ISpoofaxParseUnit parsed = spoofax.syntaxService.parse(input);
-		if (!parsed.valid())
-			throw new ParseException(input, "Could not parse");
-		
-		IContext context = SpoofaxUtil.getContext(spoofax, implementation, file);
-		try(IClosableLock lock = context.write()) {
-			ISpoofaxAnalyzeUnit analyzed = spoofax.analysisService.analyze(parsed, context).result();
-			if (!analyzed.valid())
-				throw new AnalysisException(context, "Could not analyse");
-			return new Factory().createRoot(analyzed.ast());
-		}	
+		return analyze(content, file);
 	}
-	
-	public Root analyzeFile(String path)
-			throws MetaborgException, IOException {
+
+	public Root analyzeFile(String path) throws MetaborgException, IOException {
 		FileObject file = spoofax.resourceService.resolve(path);
 		String content = spoofax.sourceTextService.text(file);
+
+		return analyze(content, file);
+	}
+
+	private Root analyze(String content, FileObject file) throws MetaborgException, IOException {
 		ISpoofaxInputUnit input = spoofax.unitService.inputUnit(file, content, implementation, null);
 		ISpoofaxParseUnit parsed = spoofax.syntaxService.parse(input);
 		if (!parsed.valid())
 			throw new ParseException(input, "Could not parse");
-		
+
 		IContext context = SpoofaxUtil.getContext(spoofax, implementation, file);
-		try(IClosableLock lock = context.write()) {
+		try (IClosableLock lock = context.write()) {
 			ISpoofaxAnalyzeUnit analyzed = spoofax.analysisService.analyze(parsed, context).result();
 			if (!analyzed.valid())
 				throw new AnalysisException(context, "Could not analyse");
