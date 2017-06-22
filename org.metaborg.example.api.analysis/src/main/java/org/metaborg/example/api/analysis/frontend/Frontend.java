@@ -1,4 +1,4 @@
-package org.metaborg.example.api.analysis.parser;
+package org.metaborg.example.api.analysis.frontend;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,18 +18,18 @@ import org.metaborg.spoofax.core.unit.ISpoofaxInputUnit;
 import org.metaborg.spoofax.core.unit.ISpoofaxParseUnit;
 import org.metaborg.util.concurrent.IClosableLock;
 
-public class Parser {
+public class Frontend {
 
 	final private Spoofax spoofax;
 	final private ILanguageImpl implementation;
 
-	public Parser(Spoofax spoofax, String languageResource) throws MetaborgException {
+	public Frontend(Spoofax spoofax, String languageResource) throws MetaborgException {
 		this.spoofax = spoofax;
 		FileObject location = spoofax.resourceService.resolve(languageResource);
 		this.implementation = spoofax.languageDiscoveryService.languageFromArchive(location);
 	}
 
-	public Root parse(String content) throws MetaborgException, IOException {
+	public Root analyze(String content) throws MetaborgException, IOException {
 		
 		FileObject file = VFS.getManager().toFileObject(File.createTempFile("temp", "example"));
 
@@ -47,7 +47,7 @@ public class Parser {
 		}	
 	}
 	
-	public Root parseFile(String path)
+	public Root analyzeFile(String path)
 			throws MetaborgException, IOException {
 		FileObject file = spoofax.resourceService.resolve(path);
 		String content = spoofax.sourceTextService.text(file);

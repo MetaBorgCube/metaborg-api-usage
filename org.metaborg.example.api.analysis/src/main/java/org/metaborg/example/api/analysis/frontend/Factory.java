@@ -1,4 +1,4 @@
-package org.metaborg.example.api.analysis.parser;
+package org.metaborg.example.api.analysis.frontend;
 
 import org.metaborg.example.api.analysis.SpoofaxUtil;
 import org.metaborg.example.api.analysis.syntax.Add;
