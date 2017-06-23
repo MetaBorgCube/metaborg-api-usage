@@ -2,7 +2,6 @@ package org.metaborg.example.api.transformation;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
@@ -109,12 +108,10 @@ public class Builder {
 			if (!analyzed.valid())
 				throw new AnalysisException(context, "Could not analyse");
 		}
-		Collection<ISpoofaxTransformUnit<ISpoofaxAnalyzeUnit>> transformUnits;
+		IStrategoTerm result;
 		try(IClosableLock lock = context.read()) {
-			transformUnits = spoofax.transformService.transform(analyzed, context, new EndNamedGoal("Evaluate"));
+			result = spoofax.strategoCommon.invoke(implementation, context, analyzed.ast(), "eval");
 		}
-
-		IStrategoTerm result = transformUnits.iterator().next().ast();
 		
 		if (result instanceof IStrategoInt)
 			return ((IStrategoInt) result).intValue();
