@@ -1,4 +1,5 @@
-package org.metaborg.example.api.transformation;
+package org.metaborg.example.api.analysis;
+
 
 import java.io.IOException;
 
@@ -16,21 +17,15 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 
 public final class SpoofaxUtil {
 
-	public static IContext getContext(Spoofax spoofax, ILanguageImpl implementation, FileObject file)
-	        throws MetaborgException, IOException {
-		IProject project = getProject(spoofax, file);
-		return spoofax.contextService.get(file, project, implementation);
-	}
-
-	public static IProject getProject(Spoofax spoofax, FileObject file) throws MetaborgException {
+	public static IContext getContext(Spoofax spoofax, ILanguageImpl implementation, FileObject file) throws MetaborgException, IOException  {
 		IProject project = spoofax.projectService.get(file);
 		if (project == null) {
 			ISimpleProjectService projectService = spoofax.injector.getInstance(SimpleProjectService.class);
 			project = projectService.create(file);
 		}
-		return project;
+		return spoofax.contextService.get(file, project, implementation);
 	}
-
+	
 	public static IStrategoAppl castStrategoAppl(IStrategoTerm term) {
 		if (term instanceof IStrategoAppl)
 			return (IStrategoAppl) term;

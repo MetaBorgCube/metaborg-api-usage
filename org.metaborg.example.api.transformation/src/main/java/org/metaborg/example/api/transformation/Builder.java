@@ -1,26 +1,32 @@
 package org.metaborg.example.api.transformation;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.action.EndNamedGoal;
+import org.metaborg.core.analysis.AnalysisException;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
-import org.metaborg.core.build.IBuildOutput;
+import org.metaborg.core.context.IContext;
 import org.metaborg.core.language.ILanguageImpl;
-import org.metaborg.core.processing.CancellationToken;
-import org.metaborg.core.processing.NullProgressReporter;
 import org.metaborg.core.project.IProject;
+import org.metaborg.core.syntax.ParseException;
 import org.metaborg.core.transform.TransformException;
 import org.metaborg.spoofax.core.Spoofax;
+import org.metaborg.spoofax.core.build.ISpoofaxBuildOutput;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
 import org.metaborg.spoofax.core.unit.ISpoofaxAnalyzeUnit;
-import org.metaborg.spoofax.core.unit.ISpoofaxAnalyzeUnitUpdate;
+import org.metaborg.spoofax.core.unit.ISpoofaxInputUnit;
 import org.metaborg.spoofax.core.unit.ISpoofaxParseUnit;
 import org.metaborg.spoofax.core.unit.ISpoofaxTransformUnit;
+import org.metaborg.util.concurrent.IClosableLock;
 import org.spoofax.interpreter.terms.IStrategoInt;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+
+import com.google.common.io.Files;
 
 public class Builder {
 
@@ -29,7 +35,8 @@ public class Builder {
 
 	public Builder(Spoofax spoofax, String languageResource) throws MetaborgException {
 		this.spoofax = spoofax;
-		this.implementation = SpoofaxUtil.getImplementation(spoofax, languageResource);
+		FileObject location = spoofax.resourceService.resolve(languageResource);
+		this.implementation = spoofax.languageDiscoveryService.languageFromArchive(location);
 	}
 
 	public String evaluateProject(String path) throws MetaborgException, IOException, InterruptedException {
@@ -45,8 +52,7 @@ public class Builder {
 				.addTransformGoal(new EndNamedGoal("Evaluate"))
 				.build(spoofax.dependencyService, spoofax.languagePathService);
 		
-		IBuildOutput<ISpoofaxParseUnit, ISpoofaxAnalyzeUnit, ISpoofaxAnalyzeUnitUpdate, ISpoofaxTransformUnit<?>> output = spoofax.builder
-				.build(input, new NullProgressReporter(), new CancellationToken());
+		ISpoofaxBuildOutput output = spoofax.builder.build(input);
 
 		if (!output.success())
 			throw new TransformException("Coul not evaluate");
@@ -74,14 +80,38 @@ public class Builder {
 				.addSource(file)
 				.addTransformGoal(new EndNamedGoal("Evaluate"))
 				.build(spoofax.dependencyService, spoofax.languagePathService);
-		
-		IBuildOutput<ISpoofaxParseUnit, ISpoofaxAnalyzeUnit, ISpoofaxAnalyzeUnitUpdate, ISpoofaxTransformUnit<?>> output = spoofax.builder
-				.build(input, new NullProgressReporter(), new CancellationToken());
+
+		ISpoofaxBuildOutput output = spoofax.builder.build(input);
 
 		if (!output.success())
 			throw new TransformException("Coul not evaluate");
 
 		IStrategoTerm result = output.transformResults().iterator().next().ast();
+		
+		if (result instanceof IStrategoInt)
+			return ((IStrategoInt) result).intValue();
+		else
+			throw new TransformException("Result is not an integer");
+	}
+	
+	public int evaluate(String content) throws MetaborgException, IOException, InterruptedException {
+		FileObject file = VFS.getManager().toFileObject(File.createTempFile("temp", "example", Files.createTempDir()));
+		ISpoofaxInputUnit input = spoofax.unitService.inputUnit(file, content, implementation, null);
+		ISpoofaxParseUnit parsed = spoofax.syntaxService.parse(input);
+		if (!parsed.valid())
+			throw new ParseException(input, "Could not parse");
+
+		IContext context = SpoofaxUtil.getContext(spoofax, implementation, file.getParent());
+		ISpoofaxAnalyzeUnit analyzed;
+		try (IClosableLock lock = context.write()) {
+			analyzed = spoofax.analysisService.analyze(parsed, context).result();
+			if (!analyzed.valid())
+				throw new AnalysisException(context, "Could not analyse");
+		}
+		IStrategoTerm result;
+		try(IClosableLock lock = context.read()) {
+			result = spoofax.strategoCommon.invoke(implementation, context, analyzed.ast(), "eval");
+		}
 		
 		if (result instanceof IStrategoInt)
 			return ((IStrategoInt) result).intValue();

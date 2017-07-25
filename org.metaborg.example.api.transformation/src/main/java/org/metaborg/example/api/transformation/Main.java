@@ -27,7 +27,8 @@ public class Main {
 			logger.info("start project evaluation");
 			logger.info(builder.evaluateProject(filePath));
 			
-			
+			logger.info("start string evaluation");
+			logger.info(Integer.toString(builder.evaluate("let x = 21 in x + let x = 7 in x * 3 end end")));
 		} catch (MetaborgException | IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
