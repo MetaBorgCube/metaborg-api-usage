@@ -14,7 +14,8 @@ strategies
 rules
 
   create-type-task(|ctx) :
-    ExternalRef(c) -> <type-is(|ctx)> ty
+    term@ExternalRef(c) -> task
     where
       ty := <get-external-type> c
-  
+    < task := <type-is(|ctx)> ty
+    + task := <task-create-error(|ctx, "error message")> term

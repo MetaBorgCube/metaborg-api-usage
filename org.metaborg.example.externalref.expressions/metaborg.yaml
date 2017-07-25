@@ -11,6 +11,8 @@ dependencies:
   source:
   - org.metaborg:org.metaborg.meta.lib.analysis:${metaborgVersion}
   - org.metaborg:meta.lib.spoofax:${metaborgVersion}
+  java:
+  - org.example:org.metaborg.example.externalref.context:0.0.1-SNAPSHOT
 pardonedLanguages:
 - EditorService
 - Stratego-Sugar
